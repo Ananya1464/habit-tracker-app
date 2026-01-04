@@ -9,19 +9,22 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "20.19.4"
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "20.19.4"
     },
     "production": {
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
       },
+      "node": "20.19.4",
       "env": {
         "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyClF67kSrG9beYdrjNdsNZMrGYRxChxj34",
         "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "habit-tracker-73d53.firebaseapp.com",

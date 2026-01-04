@@ -3,38 +3,21 @@
     "name": "Habit Tracker",
     "slug": "habit-tracker",
     "version": "1.0.0",
-    "sdkVersion": "54.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
       "backgroundColor": "#0f0f1e"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTabletMode": true
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0f1e"
-      },
       "package": "com.ananya1464.habittracker"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
         "projectId": "f73dc375-24dc-47bd-8748-7866a50fb3e8"
       }
-    },
-    "plugins": [
-      "expo-web-browser"
-    ]
+    }
   }
 }

@@ -200,7 +200,14 @@ export default function App() {
 
   // Fetch habits
   useEffect(() => {
-    const habitsRef = ref(database, 'habits');
+    if (!user) {
+      setHabits([]);
+      setHabitsData({});
+      setLoading(false);
+      return;
+    }
+
+    const habitsRef = ref(database, `users/${user.uid}/habits`);
     const unsubscribe = onValue(habitsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
@@ -220,12 +227,17 @@ export default function App() {
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Fetch today's progress
   useEffect(() => {
+    if (!user) {
+      setTodayProgress({});
+      return;
+    }
+
     const today = getTodayDateString();
-    const progressRef = ref(database, `progress/${today}`);
+    const progressRef = ref(database, `users/${user.uid}/progress/${today}`);
     const unsubscribe = onValue(progressRef, (snapshot) => {
       if (snapshot.exists()) {
         setTodayProgress(snapshot.val());
@@ -234,16 +246,21 @@ export default function App() {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Fetch all progress for stats
   useEffect(() => {
+    if (!user) {
+      setAllProgress({});
+      return;
+    }
+
     const allProgressData = {};
     const daysPromises = [];
 
     for (let i = 0; i < 30; i++) {
       const dateStr = getDateString(i);
-      const progressRef = ref(database, `progress/${dateStr}`);
+      const progressRef = ref(database, `users/${user.uid}/progress/${dateStr}`);
       daysPromises.push(
         new Promise((resolve) => {
           onValue(progressRef, (snapshot) => {
@@ -259,12 +276,12 @@ export default function App() {
     Promise.all(daysPromises).then(() => {
       setAllProgress(allProgressData);
     });
-  }, []);
+  }, [user]);
 
   const addHabit = async () => {
-    if (!newHabitName.trim()) return;
+    if (!newHabitName.trim() || !user) return;
 
-    const habitsRef = ref(database, 'habits');
+    const habitsRef = ref(database, `users/${user.uid}/habits`);
     const newHabitRef = push(habitsRef);
 
     await set(newHabitRef, {
@@ -280,10 +297,10 @@ export default function App() {
   };
 
   const addBundle = async () => {
-    if (!selectedBundle) return;
+    if (!selectedBundle || !user) return;
 
     const bundle = HABIT_BUNDLES.find(b => b.id === selectedBundle);
-    const habitsRef = ref(database, 'habits');
+    const habitsRef = ref(database, `users/${user.uid}/habits`);
 
     for (const habit of bundle.habits) {
       const newHabitRef = push(habitsRef);
@@ -301,23 +318,27 @@ export default function App() {
   };
 
   const toggleHabit = async (habitId) => {
+    if (!user) return;
+
     const today = getTodayDateString();
     const currentStatus = todayProgress[habitId] || false;
 
-    const progressRef = ref(database, `progress/${today}/${habitId}`);
+    const progressRef = ref(database, `users/${user.uid}/progress/${today}/${habitId}`);
     await set(progressRef, !currentStatus);
 
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     if (!currentStatus) {
-      const habitRef = ref(database, `habits/${habitId}/streak`);
+      const habitRef = ref(database, `users/${user.uid}/habits/${habitId}/streak`);
       const currentStreak = habitsData[habitId]?.streak || 0;
       await set(habitRef, currentStreak + 1);
     }
   };
 
   const deleteHabit = (habitId) => {
-    const habitRef = ref(database, `habits/${habitId}`);
+    if (!user) return;
+
+    const habitRef = ref(database, `users/${user.uid}/habits/${habitId}`);
     remove(habitRef);
   };
 
@@ -328,9 +349,9 @@ export default function App() {
   };
 
   const saveEditHabit = async () => {
-    if (!editingHabitName.trim() || !editingHabitId) return;
+    if (!editingHabitName.trim() || !editingHabitId || !user) return;
 
-    const habitRef = ref(database, `habits/${editingHabitId}/name`);
+    const habitRef = ref(database, `users/${user.uid}/habits/${editingHabitId}/name`);
     await set(habitRef, editingHabitName.trim());
 
     setShowEditModal(false);
@@ -391,6 +412,7 @@ export default function App() {
           habit={habits.find((h) => h.id === selectedHabitId)}
           allProgress={allProgress}
           habits={habits}
+          user={user}
           onBack={() => setSelectedHabitId(null)}
           onDelete={() => {
             deleteHabit(selectedHabitId);
@@ -574,6 +596,7 @@ function HabitDetailScreen({
   habit,
   allProgress,
   habits,
+  user,
   onBack,
   onDelete,
   onToggleProgress,
@@ -621,8 +644,8 @@ function HabitDetailScreen({
   const getTotalHabits = () => habits.length;
 
   const handleSaveName = async () => {
-    if (!editingName.trim()) return;
-    const habitRef = ref(database, `habits/${habitId}/name`);
+    if (!editingName.trim() || !user) return;
+    const habitRef = ref(database, `users/${user.uid}/habits/${habitId}/name`);
     await set(habitRef, editingName.trim());
     setIsEditingName(false);
   };
@@ -801,13 +824,18 @@ function HomeScreen({
 
   // Load all progress data
   useEffect(() => {
-    const progressRef = ref(database, 'progress');
+    if (!user) {
+      setAllProgress({});
+      return;
+    }
+
+    const progressRef = ref(database, `users/${user.uid}/progress`);
     const unsubscribe = onValue(progressRef, (snapshot) => {
       const data = snapshot.val();
       setAllProgress(data || {});
     });
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   if (habits.length === 0) {
     return (
@@ -995,10 +1023,15 @@ function HabitRow({ habit, completed, onToggle, onDelete, onEdit, onPress }) {
   );
 }
 
-function HabitMiniGraph({ habitId, habitName }) {
+function HabitMiniGraph({ habitId, habitName, user }) {
   const [habitProgress, setHabitProgress] = useState({});
 
   useEffect(() => {
+    if (!user) {
+      setHabitProgress({});
+      return;
+    }
+
     const allProgressData = {};
     const daysPromises = [];
 
@@ -1006,7 +1039,7 @@ function HabitMiniGraph({ habitId, habitName }) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      const progressRef = ref(database, `progress/${dateStr}/${habitId}`);
+      const progressRef = ref(database, `users/${user.uid}/progress/${dateStr}/${habitId}`);
       daysPromises.push(
         new Promise((resolve) => {
           onValue(progressRef, (snapshot) => {
@@ -1020,7 +1053,7 @@ function HabitMiniGraph({ habitId, habitName }) {
     Promise.all(daysPromises).then(() => {
       setHabitProgress(allProgressData);
     });
-  }, [habitId]);
+  }, [habitId, user]);
 
   // Build 7-day mini chart
   const last7Days = [];

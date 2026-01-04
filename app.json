@@ -22,10 +22,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f0f1e"
-      }
+      },
+      "package": "com.ananya1464.habittracker"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f73dc375-24dc-47bd-8748-7866a50fb3e8"
+      }
+    },
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }

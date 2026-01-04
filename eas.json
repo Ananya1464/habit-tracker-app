@@ -21,6 +21,15 @@
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyClF67kSrG9beYdrjNdsNZMrGYRxChxj34",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "habit-tracker-73d53.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "habit-tracker-73d53",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "habit-tracker-73d53.appspot.com",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "950519648263",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:950519648263:web:5f8c7e9d2a1b4c6f",
+        "EXPO_PUBLIC_FIREBASE_DATABASE_URL": "https://habit-tracker-73d53-default-rtdb.asia-southeast1.firebasedatabase.app"
       }
     }
   },

@@ -1126,12 +1126,19 @@ function StatsScreen({ allProgress, habits }) {
     return minHeight + (percent / 100) * (maxHeight - minHeight);
   };
 
-  // Last 7 days with detailed data
+  // Last 7 days with detailed data - starting from Monday of current week
   const last7Days = [];
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  for (let i = 6; i >= 0; i--) {
+  // Get today's day index (0 = Sunday, 1 = Monday, etc.)
+  const today = new Date();
+  const todayIndex = today.getDay();
+  
+  // Calculate days back to Monday (1 = Monday, 2 = Tuesday, etc. 0 = Sunday)
+  const daysBackToMonday = todayIndex === 0 ? 6 : todayIndex - 1;
+
+  for (let i = daysBackToMonday; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split('T')[0];

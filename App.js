@@ -610,8 +610,8 @@ function HabitDetailScreen({
   useEffect(() => {
     if (!habit) return;
 
-    const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const days = [];
     let completed = 0;
     let perfect = 0;
@@ -621,6 +621,8 @@ function HabitDetailScreen({
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
       const dayIndex = date.getDay();
+      const dayLabel = dayLabels[dayIndex === 0 ? 6 : dayIndex - 1];
+      const dayName = dayNames[dayIndex === 0 ? 6 : dayIndex - 1];
       const isCompleted = allProgress[dateStr]?.[habitId] || false;
 
       if (isCompleted) completed++;
@@ -628,8 +630,8 @@ function HabitDetailScreen({
 
       days.push({
         dateStr,
-        label: dayLabels[dayIndex],
-        dayName: dayNames[dayIndex],
+        label: dayLabel,
+        dayName: dayName,
         completed: isCompleted,
       });
     }
@@ -1057,7 +1059,7 @@ function HabitMiniGraph({ habitId, habitName, user }) {
 
   // Build 7-day mini chart
   const last7Days = [];
-  const dayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   for (let i = 6; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
@@ -1065,7 +1067,7 @@ function HabitMiniGraph({ habitId, habitName, user }) {
     const dayIndex = date.getDay();
     last7Days.push({
       dateStr,
-      label: dayLabels[dayIndex],
+      label: dayLabels[dayIndex === 0 ? 6 : dayIndex - 1],
       completed: habitProgress[dateStr] || false,
     });
   }

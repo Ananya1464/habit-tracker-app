@@ -1126,7 +1126,7 @@ function StatsScreen({ allProgress, habits }) {
     return minHeight + (percent / 100) * (maxHeight - minHeight);
   };
 
-  // Last 7 days with detailed data - starting from Monday of current week
+  // Last 7 days with detailed data - showing full Monday-Sunday week
   const last7Days = [];
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -1138,16 +1138,17 @@ function StatsScreen({ allProgress, habits }) {
   // Calculate days back to Monday (1 = Monday, 2 = Tuesday, etc. 0 = Sunday)
   const daysBackToMonday = todayIndex === 0 ? 6 : todayIndex - 1;
 
-  for (let i = daysBackToMonday; i >= 0; i--) {
+  // Show full week: Monday through Sunday (7 days total)
+  for (let i = 0; i < 7; i++) {
     const date = new Date();
-    date.setDate(date.getDate() - i);
+    date.setDate(date.getDate() - daysBackToMonday + i);
     const dateStr = date.toISOString().split('T')[0];
     const dayIndex = date.getDay();
     const percent = getDayCompletionPercent(dateStr);
     last7Days.push({
       dateStr,
-      dayName: dayNames[dayIndex === 0 ? 6 : dayIndex - 1],
-      label: dayLabels[dayIndex === 0 ? 6 : dayIndex - 1],
+      dayName: dayNames[i],
+      label: dayLabels[i],
       percent,
       completed: Object.values(allProgress[dateStr] || {}).filter(Boolean).length,
       total: habits.length,
